@@ -2,7 +2,7 @@ About
 
 I investigate.
 
-Most of what I do for a living is figuring out what happened and why: triaging vulnerabilities across a large estate, working incidents end to end, and querying endpoint telemetry until the timeline pieces together. The part I like is the string-pulling — one odd process, an account that logged in from somewhere anomalous, and then two hours later you can paint the full picture.
+Most of what I do for a living is figuring out what happened and why: triaging vulnerabilities across a large estate, working incidents end to end, and querying endpoint telemetry until the timeline pieces together. The part I like is the string-pulling. One odd process, an account that logged in from somewhere anomalous, and then you're painting a picture of events before you know it.
 
 I spend my own time on the attacker side; you can't hunt what you don't understand. That includes web and API exploitation, Active Directory attack chains, reproducing published CVEs from advisory to working exploit, and reading source code for the sinks people miss. Most of the writeups here are offensive for that reason. The defensive half of that loop; mapping a technique to the telemetry it leaves behind, then writing the query that catches it; is what I'm building out next.
 
