@@ -7,8 +7,15 @@ theme: "PaperMod"
 # nofollow"> on every page. Remove this block (and layouts/robots.txt) to
 # allow indexing.
 cascade:
-  - _target: {}
+  - target: {}
     robotsNoIndex: true
+
+    # Publish only the image variants the render hook processes (resized and
+    # re-encoded, so EXIF never reaches the site). Without this, Hugo copies
+    # every file in a page bundle to public/ - full-resolution originals and
+    # any stray screenshot that is not referenced by the post.
+    build:
+      publishResources: false
 
 enableRobotsTXT: true
 enableGitInfo: true      # lastmod from Git; workflow uses fetch-depth: 0

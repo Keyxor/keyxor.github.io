@@ -1,3 +1,10 @@
 public/
 resources/_gen/
 .hugo_build.lock
+
+# Raw, unredacted screenshots. Captures are staged outside the repo
+# (~/website-in-progress/screenshots-raw) and enter it only through
+# scripts/add-screenshot.sh, which strips metadata on the way in.
+_raw/
+*.raw.*
+screenshots-raw/

@@ -1,0 +1,56 @@
+{{- /*
+  Overrides PaperMod's image render hook.
+
+  Bundle-local images are run through Hugo's image pipeline instead of being
+  copied verbatim. Two things fall out of that:
+
+    - The published file is re-encoded, so EXIF (camera, GPS, serial numbers)
+      never reaches the live site.
+    - The original in the repo is never referenced, so Hugo does not publish
+      it. Only the processed copy lands in public/.
+
+  Strip metadata before committing anyway; this hook protects the site, not
+  the git history. See scripts/add-screenshot.sh.
+*/ -}}
+{{- $maxWidth := 1400 -}}
+{{- $u := urls.Parse .Destination -}}
+{{- $src := $u.String -}}
+{{- $width := "" -}}
+{{- $height := "" -}}
+{{- if not $u.IsAbs -}}
+  {{- $path := strings.TrimPrefix "./" $u.Path }}
+  {{- with or (.PageInner.Resources.Get $path) (resources.Get $path) -}}
+    {{- $img := . -}}
+    {{- if eq $img.ResourceType "image" -}}
+      {{- if gt $img.Width $maxWidth -}}
+        {{- $img = $img.Resize (printf "%dx q90" $maxWidth) -}}
+      {{- else -}}
+        {{- $img = $img.Process "q90" -}}
+      {{- end -}}
+      {{- $width = string $img.Width -}}
+      {{- $height = string $img.Height -}}
+    {{- end -}}
+    {{- $src = $img.RelPermalink -}}
+    {{- with $u.RawQuery -}}
+      {{- $src = printf "%s?%s" $src . -}}
+    {{- end -}}
+    {{- with $u.Fragment -}}
+      {{- $src = printf "%s#%s" $src . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $attributes := merge .Attributes (dict
+      "alt" .Text
+      "src" $src
+      "title" (.Title | transform.HTMLEscape)
+      "width" $width
+      "height" $height
+      "loading" "lazy"
+      "decoding" "async") -}}
+<img
+  {{- range $k, $v := $attributes -}}
+    {{- if $v -}}
+      {{- printf " %s=%q" $k $v | safeHTMLAttr -}}
+    {{- end -}}
+  {{- end -}}>
+{{- /**/ -}}

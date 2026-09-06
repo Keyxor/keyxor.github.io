@@ -23,6 +23,9 @@ Fenced code block with the scan (for example: nmap -sC -sV -p- <ip>), then expla
 
 Methodology and important discoveries.
 
+<!-- Screenshots live in this folder, next to index.md, and are referenced by
+     filename alone. Add them with scripts/add-screenshot.sh so metadata is
+     stripped before the file is committed. -->
 ![Initial application](application.png)
 
 ## Initial Access
