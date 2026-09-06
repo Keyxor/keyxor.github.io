@@ -1,0 +1,15 @@
+{{- /*
+  Callout box, used to carry across the emphasis blocks from my Notion notes.
+
+    {{< callout icon="🎯" kind="lesson" >}}
+    Body markdown.
+    {{< /callout >}}
+
+  kind sets the accent colour: note (default), lesson, warning, win.
+*/ -}}
+{{- $kind := .Get "kind" | default "note" -}}
+{{- $icon := .Get "icon" -}}
+<div class="callout callout-{{ $kind }}">
+  {{- with $icon }}<span class="callout-icon" aria-hidden="true">{{ . }}</span>{{ end }}
+  <div class="callout-body">{{ .Inner | .Page.RenderString (dict "display" "block") }}</div>
+</div>
