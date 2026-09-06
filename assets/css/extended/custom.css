@@ -1,0 +1,11 @@
+/* Site-specific overrides. PaperMod loads every file in assets/css/extended/
+   after its own styles, so theme files never need editing.
+
+   Reserved for (Section 13 of the build guide):
+   - accent color
+   - font sizes / max article width
+   - cards, header spacing, homepage layout
+   - mobile spacing
+   - code block appearance
+   - featured work
+*/

@@ -1,0 +1,108 @@
+baseURL: "https://keyxor.github.io/"
+locale: "en-us"
+title: "Keyxor"
+theme: "PaperMod"
+
+enableRobotsTXT: true
+enableGitInfo: true      # lastmod from Git; workflow uses fetch-depth: 0
+pygmentsUseClasses: true # Chroma via CSS classes (PaperMod styles these)
+
+pagination:
+  pagerSize: 10
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+params:
+  env: production
+  title: "Keyxor"
+
+  # Required: without this the home page lists only the largest section
+  mainSections:
+    - offensive
+    - projects
+    # - defensive   # uncomment when the first defensive post exists
+    # - articles    # uncomment when the first article exists
+
+  # Use Hugo/Chroma only; disable PaperMod's client-side highlight.js
+  assets:
+    disableHLJS: true
+  description: "Cybersecurity research, offensive security, detection engineering, and threat hunting."
+  author: "Keyxor"
+
+  defaultTheme: auto
+  disableThemeToggle: false
+
+  ShowReadingTime: true
+  ShowWordCount: true
+  ShowBreadCrumbs: true
+  ShowPostNavLinks: true
+  ShowCodeCopyButtons: true
+  ShowToc: true
+  TocOpen: false
+
+  homeInfoParams:
+    Title: "Keyxor"
+    Content: >
+      Offensive security and web application testing, with a
+      background in vulnerability management and detection.
+
+  socialIcons:
+    - name: github
+      url: "https://github.com/Keyxor"
+
+    - name: linkedin
+      url: "https://www.linkedin.com/in/noah-cuberly"
+
+menu:
+  main:
+    - identifier: about
+      name: About
+      url: /about/
+      weight: 10
+
+    - identifier: offensive
+      name: Offensive
+      url: /offensive/
+      weight: 20
+
+    # Uncomment when the first defensive post exists
+    # - identifier: defensive
+    #   name: Defensive
+    #   url: /defensive/
+    #   weight: 30
+
+    - identifier: projects
+      name: Projects
+      url: /projects/
+      weight: 40
+
+    # Uncomment when the first article exists
+    # - identifier: articles
+    #   name: Articles
+    #   url: /articles/
+    #   weight: 50
+
+    - identifier: search
+      name: Search
+      url: /search/
+      weight: 60
+
+    - identifier: github
+      name: "GitHub ↗"
+      url: "https://github.com/Keyxor"
+      weight: 70
+
+taxonomies:
+  category: categories
+  tag: tags
+
+markup:
+  highlight:
+    codeFences: true
+    noClasses: false   # pairs with pygmentsUseClasses
+    guessSyntax: false # guessing mangles nmap/Burp/tool output; tag fences explicitly
+    lineNos: false     # enable per block with {linenos=true} when it helps
