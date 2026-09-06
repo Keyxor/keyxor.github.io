@@ -8,7 +8,7 @@ Each writeup is a page bundle: a folder holding `index.md` and the images it
 references.
 
 ```
-content/offensive/some-box/
+content/writeups/some-box/
   index.md
   login-form.png      ->  ![Login form](login-form.png)
 ```

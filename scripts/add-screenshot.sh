@@ -12,11 +12,11 @@ set -euo pipefail
 src="${1:-}"
 slug="${2:-}"
 name="${3:-$(basename "${src:-x}")}"
-section="${SECTION:-offensive}"
+section="${SECTION:-writeups}"
 
 if [ -z "$src" ] || [ -z "$slug" ]; then
   echo "usage: $0 <raw-image> <writeup-slug> [new-name]" >&2
-  echo "       SECTION=projects $0 ...   # non-default section" >&2
+  echo "       SECTION=tools $0 ...       # non-default section" >&2
   exit 2
 fi
 

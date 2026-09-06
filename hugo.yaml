@@ -35,11 +35,13 @@ params:
   title: "Keyxor"
 
   # Required: without this the home page lists only the largest section
+  # Sections are content types. Offensive vs defensive is a category, not a
+  # section, so a writeup that is honestly both does not have to pick one.
   mainSections:
-    - offensive
-    - projects
-    # - defensive   # uncomment when the first defensive post exists
-    # - articles    # uncomment when the first article exists
+    - writeups
+    - tools
+    # - projects  # uncomment for larger builds (cloud lab, Terraform, etc.)
+    # - articles  # uncomment when the first article exists
 
   # Use Hugo/Chroma only; disable PaperMod's client-side highlight.js
   assets:
@@ -67,21 +69,21 @@ params:
 
 menu:
   main:
-    - identifier: offensive
-      name: Offensive
-      url: /offensive/
+    - identifier: writeups
+      name: Writeups
+      url: /writeups/
       weight: 20
 
-    # Uncomment when the first defensive post exists
-    # - identifier: defensive
-    #   name: Defensive
-    #   url: /defensive/
-    #   weight: 30
+    - identifier: tools
+      name: Tools
+      url: /tools/
+      weight: 30
 
-    - identifier: projects
-      name: Projects
-      url: /projects/
-      weight: 40
+    # Uncomment for larger builds that span more than a single tool
+    # - identifier: projects
+    #   name: Projects
+    #   url: /projects/
+    #   weight: 40
 
     # Uncomment when the first article exists
     # - identifier: articles

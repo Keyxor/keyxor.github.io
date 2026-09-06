@@ -1,11 +1,15 @@
 ---
-title: "Hack The Box: Example Writeup"
-date: 2026-09-05T18:04:43-07:00
+title: "{{ replace .File.ContentBaseName "-" " " | title }}"
+date: {{ .Date }}
 draft: true
 summary: ""
+# Categories are the topic axis: Offensive, Defensive, or both when the
+# writeup covers a technique and the telemetry it leaves behind.
 categories:
-  - Hack The Box
+  - Offensive
+# Tags are everything else: platform, target OS, techniques.
 tags:
+  - Hack The Box
   - Linux
 ShowToc: true
 TocOpen: true
@@ -23,6 +27,9 @@ Fenced code block with the scan (for example: nmap -sC -sV -p- <ip>), then expla
 
 Methodology and important discoveries.
 
+<!-- Screenshots live in this folder, next to index.md, and are referenced by
+     filename alone. Add them with scripts/add-screenshot.sh so metadata is
+     stripped before the file is committed. -->
 ![Initial application](application.png)
 
 ## Initial Access
