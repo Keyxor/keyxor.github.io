@@ -28,6 +28,8 @@ TocOpen: false
      [detection content](../broscience-detection/) -->
 This is the attack half of a three-part writeup. Remediation and CVSS scoring for these findings, and detection content for the same chain, are separate pages, still in draft.
 
+If you want the commands without the reasoning, there is a [speedrun version](../broscience-speedrun/).
+
 ## 1. Recon
 
 Full TCP sweep, then version and script scan on what came back.
@@ -732,8 +734,6 @@ The `-p` matters. Bash drops privileges at startup when the effective UID does n
 {{< /callout >}}
 
 ## What didn't work
-
-Collected here rather than left scattered, because the failures carry more than the successes do.
 
 **Single-encoded traversal.** `../../../../etc/passwd` and `..%2f` both returned an empty response. Only after working through the filter shapes did `..%252f` land, with the percent-of-percent form `..%25%32%66` proving most reliable in Repeater.
 
