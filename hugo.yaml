@@ -3,6 +3,13 @@ locale: "en-us"
 title: "Keyxor"
 theme: "PaperMod"
 
+# TEMPORARY: site is unfinished. Emits <meta name="robots" content="noindex,
+# nofollow"> on every page. Remove this block (and layouts/robots.txt) to
+# allow indexing.
+cascade:
+  - _target: {}
+    robotsNoIndex: true
+
 enableRobotsTXT: true
 enableGitInfo: true      # lastmod from Git; workflow uses fetch-depth: 0
 pygmentsUseClasses: true # Chroma via CSS classes (PaperMod styles these)
@@ -44,12 +51,6 @@ params:
   ShowToc: true
   TocOpen: false
 
-  homeInfoParams:
-    Title: "Keyxor"
-    Content: >
-      Offensive security and web application testing, with a
-      background in vulnerability management and detection.
-
   socialIcons:
     - name: github
       url: "https://github.com/Keyxor"
@@ -59,11 +60,6 @@ params:
 
 menu:
   main:
-    - identifier: about
-      name: About
-      url: /about/
-      weight: 10
-
     - identifier: offensive
       name: Offensive
       url: /offensive/

@@ -1,12 +1,10 @@
 ---
-title: "About"
+title: "Noah \"Keyxor\" Cuberly"
 description: "Security practitioner working vulnerability management, incident response, and offensive security."
-hidemeta: true
-ShowToc: false
-ShowBreadCrumbs: false
-ShowReadingTime: false
-ShowWordCount: false
+disableAnchoredHeadings: true
 ---
+
+# Noah "Keyxor" Cuberly
 
 I investigate.
 
@@ -18,8 +16,6 @@ I have been in IT for ten years, with four in security. I'm a veteran of the Uni
 
 I've completed the full CPTS and CWES skill paths on Hack The Box, and hold CompTIA Security+ and SecurityX (formerly CASP).
 
-Writeups live in the [Offensive](/offensive/) section.
+[GitHub](https://github.com/Keyxor) · [LinkedIn](https://www.linkedin.com/in/noah-cuberly)
 
 ---
-
-[Experience and certifications](/experience/) · [GitHub](https://github.com/Keyxor) · [LinkedIn](https://www.linkedin.com/in/noah-cuberly)

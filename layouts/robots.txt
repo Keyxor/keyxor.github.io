@@ -1,0 +1,6 @@
+# Site is unfinished, so crawling is disallowed for now.
+# To reopen: delete this file (the theme's default at
+# themes/PaperMod/layouts/robots.txt takes over and allows all),
+# and remove the `cascade: robotsNoIndex` block from hugo.yaml.
+User-agent: *
+Disallow: /
