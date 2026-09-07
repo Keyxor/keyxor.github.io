@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <!-- Safari pinned-tab mask icon. The spec wants a flat single-colour
+       silhouette on a transparent ground, so this is the bolt from the site
+       icon on its own - the raven does not survive being reduced to one
+       colour at 16px. Safari recolours the black fill itself. -->
+  <path fill="#000" d="M9.8 0.8 L3.4 9.3 h3.6 l-1.1 5.9 L12.6 6.5 H8.9 Z"/>
+</svg>

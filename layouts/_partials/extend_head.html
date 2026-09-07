@@ -1,0 +1,7 @@
+{{- /*
+  PaperMod's head.html emits the favicon and apple-touch-icon links but has no
+  slot for the web app manifest, so it is added here. The manifest is what
+  points Android/Chrome at the 192px and 512px icons and sets the install
+  colours; without this link those two PNGs are never requested.
+*/ -}}
+<link rel="manifest" href="{{ "site.webmanifest" | absURL }}">

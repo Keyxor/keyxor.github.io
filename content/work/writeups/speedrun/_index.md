@@ -1,4 +1,7 @@
 ---
+aliases:
+  - /writeups/speedrun/
+weight: 30
 title: "Speedrun"
 description: "Command chains only. One line per step, no reasoning."
 ---

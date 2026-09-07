@@ -1,4 +1,7 @@
 ---
+aliases:
+  - /writeups/defensive/
+weight: 20
 title: "Defensive"
 description: "Detection content and remediation for the techniques in the offensive writeups."
 ---

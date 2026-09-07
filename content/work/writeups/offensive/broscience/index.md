@@ -5,6 +5,7 @@ date: 2026-09-06
 draft: false
 tier: full
 aliases:
+  - /writeups/offensive/broscience/
   - /writeups/broscience-attack/
 categories:
   - Offensive
@@ -31,7 +32,7 @@ TocOpen: false
      [detection content](../../defensive/broscience-detection/) -->
 This is the attack half of a three-part writeup. Remediation and CVSS scoring for these findings, and detection content for the same chain, are separate pages, still in draft.
 
-If you want the commands without the reasoning, there is a [speedrun version]({{< relref "/writeups/speedrun/broscience" >}}).
+If you want the commands without the reasoning, there is a [speedrun version]({{< relref "/work/writeups/speedrun/broscience" >}}).
 
 ## 1. Recon
 

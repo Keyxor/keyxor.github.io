@@ -38,7 +38,7 @@ params:
   # Sections are content types. Offensive vs defensive is a category, not a
   # section, so a writeup that is honestly both does not have to pick one.
   mainSections:
-    - writeups
+    - work
     - tools
     # - projects  # uncomment for larger builds (cloud lab, Terraform, etc.)
     # - articles  # uncomment when the first article exists
@@ -46,11 +46,28 @@ params:
   # Use Hugo/Chroma only; disable PaperMod's client-side highlight.js
   assets:
     disableHLJS: true
+
+    # Favicon set lives in static/ and is copied to the site root verbatim.
+    # PaperMod emits <link> tags for favicon.ico, the two PNGs, and
+    # apple-touch-icon.png from these params, falling back to the same
+    # filenames if unset - they are named here so the set is documented in one
+    # place. safari_pinned_tab has no theme default that exists on disk, so
+    # leaving it unset means a 404 on every page load.
+    favicon: "/favicon.ico"
+    favicon16x16: "/favicon-16x16.png"
+    favicon32x32: "/favicon-32x32.png"
+    apple_touch_icon: "/apple-touch-icon.png"
+    safari_pinned_tab: "/safari-pinned-tab.svg"
+    theme_color: "#0b1020"
+    msapplication_TileColor: "#0b1020"
   description: "Cybersecurity research, offensive security, detection engineering, and threat hunting."
   author: "Keyxor"
 
-  defaultTheme: auto
-  disableThemeToggle: false
+  # Dark only. baseof.html stamps data-theme="dark" server-side and, with the
+  # toggle disabled, footer.html emits no theme JS - so the palette in
+  # assets/css/extended/custom.css is the only one that ever renders.
+  defaultTheme: dark
+  disableThemeToggle: true
 
   ShowReadingTime: true
   ShowWordCount: true
@@ -69,9 +86,9 @@ params:
 
 menu:
   main:
-    - identifier: writeups
-      name: Writeups
-      url: /writeups/
+    - identifier: work
+      name: Work
+      url: /work/
       weight: 20
 
     - identifier: tools

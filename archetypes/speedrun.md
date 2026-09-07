@@ -15,7 +15,7 @@ TocOpen: false
 ---
 
 Commands and output, one line per step. The reasoning, the dead ends, and why
-each pivot was chosen are in the [long version]({{`{{< relref "/writeups/offensive/SLUG" >}}`}}).
+each pivot was chosen are in the [long version]({{`{{< relref "/work/writeups/offensive/SLUG" >}}`}}).
 
 Target: `10.10.10.10`, attacker: `10.10.14.1`.
 

@@ -8,3 +8,8 @@ resources/_gen/
 _raw/
 *.raw.*
 screenshots-raw/
+
+# Windows alternate-data-stream sidecars. WSL surfaces these as real files when
+# something is copied in from a Windows download, and Hugo then publishes them
+# out of static/ alongside the file they describe.
+*:Zone.Identifier

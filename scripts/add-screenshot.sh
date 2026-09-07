@@ -5,6 +5,12 @@
 #   scripts/add-screenshot.sh ~/website-in-progress/screenshots-raw/boxname/shot.png boxname
 #   scripts/add-screenshot.sh shot.png boxname login-form.png    # rename on copy
 #
+# SECTION is the path under content/ holding the bundle. It defaults to the
+# offensive writeups; set it for anything else:
+#
+#   SECTION=work/writeups/defensive scripts/add-screenshot.sh shot.png boxname
+#   SECTION=tools scripts/add-screenshot.sh shot.png toolname
+#
 # Raw captures stay outside the repo. Only the scrubbed copy is committed, and
 # only the resized variant the render hook produces is published.
 set -euo pipefail
@@ -12,11 +18,11 @@ set -euo pipefail
 src="${1:-}"
 slug="${2:-}"
 name="${3:-$(basename "${src:-x}")}"
-section="${SECTION:-writeups}"
+section="${SECTION:-work/writeups/offensive}"
 
 if [ -z "$src" ] || [ -z "$slug" ]; then
   echo "usage: $0 <raw-image> <writeup-slug> [new-name]" >&2
-  echo "       SECTION=tools $0 ...       # non-default section" >&2
+  echo "       SECTION=work/writeups/defensive $0 ...   # non-default section" >&2
   exit 2
 fi
 

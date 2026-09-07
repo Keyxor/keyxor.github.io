@@ -1,4 +1,7 @@
 ---
+aliases:
+  - /writeups/offensive/
+weight: 10
 title: "Offensive"
 description: "Full box writeups: exploitation, reasoning, and the dead ends."
 ---

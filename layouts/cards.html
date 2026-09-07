@@ -1,0 +1,55 @@
+{{- /*
+  Hub layout: page content, then one card per child section.
+
+  Used by the /work/ and /work/writeups/ landing pages. PaperMod's list.html
+  renders sub-sections through the same post-entry markup as posts, which sorts
+  them by title and gives no way to order them deliberately. These cards read
+  .Sections in weight order instead, so the grid matches the order the sections
+  are meant to be read in.
+
+  Opt in with `layout: cards` in the section's front matter. Any section without
+  a weight sorts last (weight 0 sorts first in Hugo, so set one on every child).
+*/ -}}
+{{- define "main" }}
+
+<header class="page-header">
+  {{- partial "breadcrumbs.html" . }}
+  <h1>{{ .Title }}</h1>
+  {{- with .Description }}
+  <div class="post-description">{{ . | markdownify }}</div>
+  {{- end }}
+</header>
+
+{{- with .Content }}
+<div class="post-content md-content">{{ . }}</div>
+{{- end }}
+
+<nav class="card-grid" aria-label="{{ .Title }} sections">
+  {{- range .Sections.ByWeight }}
+  <a class="card" href="{{ .Permalink }}">
+    <h2 class="card-title">{{ .Title }}</h2>
+    {{- with .Description }}
+    <p class="card-desc">{{ . }}</p>
+    {{- end }}
+    {{- $n := len .RegularPagesRecursive }}
+    <span class="card-meta">
+      {{- if eq $n 0 }}Nothing published yet
+      {{- else }}{{ $n }} {{ if eq $n 1 }}post{{ else }}posts{{ end }}{{ end -}}
+    </span>
+  </a>
+  {{- end }}
+</nav>
+
+{{- /* Regular pages filed directly in this section, if any ever are. */ -}}
+{{- with .RegularPages.ByDate.Reverse }}
+{{- range . }}
+<article class="post-entry">
+  <header class="entry-header"><h2>{{ .Title }}</h2></header>
+  <div class="entry-content"><p>{{ .Summary | plainify | htmlUnescape }}{{ if .Truncated }}...{{ end }}</p></div>
+  <footer class="entry-footer">{{ partial "post_meta.html" . }}</footer>
+  <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
+</article>
+{{- end }}
+{{- end }}
+
+{{- end }}{{/* main */}}

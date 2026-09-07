@@ -8,7 +8,7 @@ Each writeup is a page bundle: a folder holding `index.md` and the images it
 references.
 
 ```
-content/writeups/some-box/
+content/work/writeups/offensive/some-box/
   index.md
   login-form.png      ->  ![Login form](login-form.png)
 ```
@@ -27,6 +27,14 @@ scripts/add-screenshot.sh ~/website-in-progress/screenshots-raw/some-box/shot.pn
 
 That copies the file into the bundle and strips its metadata. It prints the
 markdown line to paste.
+
+The bundle is looked up under `content/work/writeups/offensive/` by default.
+Pass `SECTION` for anywhere else, as a path under `content/`:
+
+```
+SECTION=work/writeups/defensive scripts/add-screenshot.sh shot.png some-box
+SECTION=tools                   scripts/add-screenshot.sh shot.png some-tool
+```
 
 ## What protects what
 
