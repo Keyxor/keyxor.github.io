@@ -1,7 +1,7 @@
 ---
 title: "Detections"
 description: "Standalone hunting queries and analytics rules, written against behaviour rather than signatures."
-weight: 30
+weight: 20
 ---
 
 Hunting queries and analytics rules that stand on their own, separate from the

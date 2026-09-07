@@ -2,7 +2,7 @@
 title: "Writeups"
 description: "Machine writeups, CVE reproductions, source-code review, and the detection content that catches the same techniques."
 layout: cards
-weight: 20
+weight: 10
 aliases:
   - /writeups/
 ---
