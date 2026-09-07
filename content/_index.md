@@ -17,5 +17,3 @@ I have been in IT for ten years, with four in security. I'm a veteran of the Uni
 I've completed the full CPTS and CWES skill paths on Hack The Box, and hold CompTIA Security+ and SecurityX (formerly CASP).
 
 [GitHub](https://github.com/Keyxor) · [LinkedIn](https://www.linkedin.com/in/noah-cuberly)
-
----

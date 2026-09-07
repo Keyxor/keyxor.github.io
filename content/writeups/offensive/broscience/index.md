@@ -1,12 +1,15 @@
 ---
-title: "BroScience — Attack: LFI to Weak PRNG to PHP Object Injection to Root"
+title: "BroScience — LFI to Weak PRNG to PHP Object Injection to Root"
 summary: "Double-encoded traversal gives source, source gives a seedable PRNG and an unserialize() on a cookie, and a root cron job reading bill's certificate gives root."
 date: 2026-09-06
 draft: false
 tier: full
+aliases:
+  - /writeups/broscience-attack/
 categories:
   - Offensive
 tags:
+  - BroScience
   - Hack The Box
   - Linux
   - Web
@@ -24,11 +27,11 @@ TocOpen: false
 **Chain:** double-encoded path traversal, source disclosure, `srand(time())` activation-code forgery, PHP object injection via the `user-prefs` cookie, webshell, salted-MD5 crack to `bill`, command injection in a root cron script.
 
 <!-- Re-link these when the sibling pages publish:
-     [Remediation and CVSS scoring](../broscience-remediation/)
-     [detection content](../broscience-detection/) -->
+     [Remediation and CVSS scoring](../../defensive/broscience-remediation/)
+     [detection content](../../defensive/broscience-detection/) -->
 This is the attack half of a three-part writeup. Remediation and CVSS scoring for these findings, and detection content for the same chain, are separate pages, still in draft.
 
-If you want the commands without the reasoning, there is a [speedrun version](../broscience-speedrun/).
+If you want the commands without the reasoning, there is a [speedrun version]({{< relref "/writeups/speedrun/broscience" >}}).
 
 ## 1. Recon
 
@@ -756,7 +759,7 @@ None of this is exotic. A `path=` parameter, a `rand()` where `random_bytes()` b
 The thing I took away is that the vulnerability is usually not where the interesting output shows up. The file read did not get me a shell, it got me the source containing the two bugs that did. The `chmod +s` was not the privilege escalation, it was the last step of one that actually happened when root read a file bill could write.
 
 Six findings came out of this chain, and all six are load bearing for the path from an anonymous HTTP request to root. The findings table, CVSS scoring with defensible alternates, and code-level remediation for each are on the remediation page. Detection content for the same chain is on the detection page. Both are still in draft.
-<!-- Re-link on publish: [remediation page](../broscience-remediation/) and [detection page](../broscience-detection/) -->
+<!-- Re-link on publish: [remediation page](../../defensive/broscience-remediation/) and [detection page](../../defensive/broscience-detection/) -->
 
 ---
 

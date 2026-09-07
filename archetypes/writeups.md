@@ -3,12 +3,14 @@ title: "{{ replace .File.ContentBaseName "-" " " | title }}"
 date: {{ .Date }}
 draft: true
 summary: ""
-# Categories are the topic axis: Offensive, Defensive, or both when the
-# writeup covers a technique and the telemetry it leaves behind.
+# Sections carry the offensive/defensive split now; keep this matching the
+# section the page lives in.
 categories:
   - Offensive
-# Tags are everything else: platform, target OS, techniques.
+# First tag is the box name, so /tags/<box>/ collects the offensive,
+# defensive and speedrun pages for one machine in one place.
 tags:
+  - {{ replace .File.ContentBaseName "-" " " | title }}
   - Hack The Box
   - Linux
 ShowToc: true

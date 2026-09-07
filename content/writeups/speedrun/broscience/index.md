@@ -4,9 +4,12 @@ summary: "The command chain only. Traversal to source, forged activation code, o
 date: 2026-09-06
 draft: false
 tier: speedrun
+aliases:
+  - /writeups/broscience-speedrun/
 categories:
   - Offensive
 tags:
+  - BroScience
   - Hack The Box
   - Linux
   - Web
@@ -17,7 +20,7 @@ ShowToc: true
 TocOpen: false
 ---
 
-Commands and output, one line per step. The reasoning, the dead ends, and why each pivot was chosen are in the [long version](../broscience-attack/).
+Commands and output, one line per step. The reasoning, the dead ends, and why each pivot was chosen are in the [long version]({{< relref "/writeups/offensive/broscience" >}}).
 
 Target: `10.129.228.129`, attacker: `10.10.14.247`.
 

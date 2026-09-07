@@ -1,11 +1,16 @@
 ---
 title: "Writeups"
-description: "Machine writeups, CVE reproductions, and source-code review."
+description: "Machine writeups, CVE reproductions, source-code review, and the detection content that catches the same techniques."
 ---
 
-Hack The Box machines, CVE reproductions from advisory to working exploit,
-source-code review, and detection work. Each one covers the reasoning, not
-just the commands that worked.
+Three ways in, depending on what you came for.
 
-Browse by [category](/categories/) for the offensive and defensive split, or
-by [tag](/tags/) for a platform or technique.
+**[Offensive](offensive/)** is the full account of each box: the reasoning, the
+dead ends, and why each pivot was chosen over the alternatives.
+
+**[Defensive](defensive/)** is the other half of the same work. What each
+technique leaves in telemetry, the queries that catch it, and the code-level
+fixes with severity scoring.
+
+**[Speedrun](speedrun/)** is the command chain alone. One line per step, no
+reasoning, for when you want to move through a box rather than read about one.

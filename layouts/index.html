@@ -1,0 +1,22 @@
+{{- /*
+  Home page: the bio, and nothing else.
+
+  PaperMod's default home appends a paginated list of recent posts from
+  mainSections. Writeups are reached through the nav instead, so this template
+  renders only the content of content/_index.md.
+
+  mainSections is deliberately left populated in hugo.yaml - archives.html and
+  post_nav_links.html both read it, so emptying it to clear this list would
+  silently remove the prev/next links from every writeup.
+*/ -}}
+{{- define "main" }}
+
+{{- if .Content }}
+<div class="post-content md-content">
+  {{- if not (.Param "disableAnchoredHeadings") }}
+  {{- partial "anchored_headings.html" .Content -}}
+  {{- else }}{{ .Content }}{{ end }}
+</div>
+{{- end }}
+
+{{- end }}{{/* main */}}
