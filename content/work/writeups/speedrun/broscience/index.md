@@ -57,7 +57,7 @@ postgres:x:106:113:PostgreSQL administrator,,,:/var/lib/postgresql:/bin/bash
 bill:x:1000:1000:,,,:/home/bill:/bin/bash
 ```
 
-**2. Read the source.** `img.php` sits in `/includes/`, so one `..%252F` reaches the web root. A bare `path=utils.php` does not resolve — traverse out and back in.
+**2. Read the source.** `img.php` sits in `/includes/`, so one `..%252F` reaches the web root.
 
 ```http
 GET /includes/img.php?path=..%252Flogin.php
@@ -105,7 +105,7 @@ username=hacker&email=hacker@broscience.htb&password=hacker&password-confirm=hac
 Date: Fri, 05 Jun 2026 16:21:48 GMT
 ```
 
-**6. Generate the 11 candidate codes.** Pass the header string to `strtotime()`; converting it by hand introduces a timezone error.
+**6. Generate the 11 candidate codes.** Pass the header string to `strtotime()`.
 
 ```php
 <?php
@@ -202,7 +202,7 @@ ssh bill@broscience.htb
 cat /home/bill/user.txt
 ```
 
-**12. Find the root cron job.** `sudo -l`, `crontab -l`, the SUID sweep and `getcap -r /` all come back empty. pspy sees what they cannot.
+**12. Find the root cron job.** `sudo -l`, `crontab -l`, the SUID sweep and `getcap -r /` all come back empty. pspy catches it.
 
 ```bash
 # attacker
@@ -228,7 +228,7 @@ commonName=$(echo ${commonName:5} | awk -F, '{print $1}')
 
 `$commonName` comes from a certificate bill controls, unquoted into `bash -c`.
 
-**14. Build a certificate that expires inside 24 hours**, so `-checkend 86400` fails and the script proceeds. Command substitution in the CN; the semicolon form did not work.
+**14. Build a certificate that expires inside 24 hours**, so `-checkend 86400` fails and the script proceeds. Command substitution in the CN.
 
 ```bash
 cat > /tmp/oc.cnf <<'CNF'
@@ -257,7 +257,7 @@ cat /root/root.txt
 
 ## Chain summary
 
-1. `img.php?path=` accepts double-encoded traversal — arbitrary file read.
+1. `img.php?path=` accepts double-encoded traversal: arbitrary file read.
 2. Read `/etc/passwd`: `bill` is the only user with a shell.
 3. Read the application source through the same primitive.
 4. `db_connect.php` gives the Postgres credentials and the global salt `NaCl`.
@@ -265,10 +265,10 @@ cat /root/root.txt
 6. Register an account; the response `Date:` header is the PRNG seed.
 7. Generate 11 candidate activation codes, ffuf them, activate the account.
 8. Serialize `AvatarInterface` with a remote `tmp` and a web-root `imgPath`.
-9. Send it as `user-prefs` to a page that reads the theme — `__wakeup()` writes the webshell.
+9. Send it as `user-prefs` to a page that reads the theme; `__wakeup()` writes the webshell.
 10. `shell.php?cmd=` gives `www-data`; upgrade to a reverse shell.
 11. Dump `users`, crack bill's salted MD5 (hashcat mode 20) to `iluvhorsesandgym`.
 12. SSH as bill; pspy shows root running `/opt/renew_cert.sh` against a cert in bill's home.
-13. Unquoted `$commonName` reaches `bash -c` — put command substitution in the CN.
+13. Unquoted `$commonName` reaches `bash -c`; put command substitution in the CN.
 14. Certificate expires in 24h so the renewal fires; cron runs the payload as root.
-15. `/tmp/rootbash -p` — root.
+15. `/tmp/rootbash -p` gives root.
