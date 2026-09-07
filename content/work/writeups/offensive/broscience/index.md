@@ -54,7 +54,7 @@ PORT    STATE SERVICE  VERSION
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
 
-SSH 8.4p1 on Debian 11 has nothing free, so the attack surface is the web tier. Port 80 redirects to 443, which I noted as a possible lever. If an app can be forced back into plain HTTP you sometimes get behavior the developer never intended around cookie flags and cert checks. It did not end up mattering here, but it is worth writing down every time.
+SSH 8.4p1 on Debian 11 has nothing free, so the attack surface is the web tier. Port 80 redirects to 443, which I noted as a possible lever. If an app can be forced back into plain HTTP you sometimes get behavior the developer never intended around cookie flags and cert checks. It did not end up mattering here, but it is worth writing down.
 
 ```bash
 echo "10.129.228.129 broscience.htb" | sudo tee -a /etc/hosts
@@ -64,7 +64,7 @@ echo "10.129.228.129 broscience.htb" | sudo tee -a /etc/hosts
 
 The site is a bodybuilding-themed PHP app: articles, login, registration, user profiles.
 
-Standard opening on any web target, run in the background while I read the application by hand. Content discovery with a PHP extension, then virtual host enumeration, because a second vhost is free scope and costs one command:
+Standard opening on any web target, run in the background while I read the application by hand. Content discovery with a PHP extension, then virtual host enumeration, because a second vhost is free scope and is one command:
 
 ```bash
 ffuf -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt \
@@ -83,7 +83,7 @@ Parameter discovery on any endpoint that looks like it takes input but does not 
 arjun -u https://broscience.htb/user.php
 ```
 
-I run this on every web box before anything else because it is cheap and it occasionally hands you the whole thing. On BroScience it was not what found the entry point. That came from reading the rendered page source.
+I run this on every web box before anything else because it is cheap and occasionally hands you the whole thing. Though, on BroScience it was not what found the entry point. That came from reading the rendered page source.
 
 Images on the site are not referenced as static files. Every one of them is fetched through a PHP script with the filename passed as a query parameter:
 
@@ -93,7 +93,7 @@ Images on the site are not referenced as static files. Every one of them is fetc
 
 Serving a static asset through an interpreter is slower and more complex than letting the web server hand back the file, so a developer who does it anyway has written custom code that takes a filename from the client and resolves it into a path on disk. Whatever validation exists is theirs, not the web server's. A parameter named `path` feeding something that returns file bytes is worth attacking before anything else on the site.
 
-There is a second route to the same place, and other published writeups take it: content discovery surfaces `/includes/img.php` on its own, and requesting it with no query string returns an error complaining that the `path` parameter is missing. An endpoint that names the parameter it wants in an error message is the same lead by a different door.
+There is a second route to the same place, and other published writeups take it: content discovery surfaces `/includes/img.php` on its own, and requesting it with no query string returns an error stating that the `path` parameter is missing. An endpoint that names the parameter it wants in an error message is the same lead by a different door.
 
 This naive attempt was blocked with an empty response:
 
@@ -120,7 +120,7 @@ postgres:x:106:113:PostgreSQL administrator,,,:/var/lib/postgresql:/bin/bash
 bill:x:1000:1000:,,,:/home/bill:/bin/bash
 ```
 
-Two things went straight into the notes file: `bill` is the only real user account with a home directory, and PostgreSQL is installed.
+Two things went straight into my notes file: `bill` is the only real user account with a home directory, and PostgreSQL is installed.
 
 {{< callout icon="📖" kind="note" >}}
 On naming, because the distinction matters for what comes next. This is a directory traversal leading to arbitrary file read, not a local file inclusion. In an LFI the retrieved file is handed to the interpreter and executed, which is why LFI chains to RCE through log poisoning, session files, or `php://` wrappers. Here `img.php` opens the file and returns its bytes, so PHP source comes back as source instead of running.
