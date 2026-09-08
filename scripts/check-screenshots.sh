@@ -15,8 +15,13 @@ max_bytes=$((2 * 1024 * 1024))
 # screenshot tool's name is not sensitive and blocking it is noise.
 blocked_tags='GPSLatitude|GPSLongitude|GPSPosition|SerialNumber|InternalSerialNumber|OwnerName|Artist|Creator|By-line|XPAuthor|UserComment|HostComputer|Make|Model'
 
-staged=$(git diff --cached --name-only --diff-filter=ACM | grep -Ei '\.(png|jpe?g|gif|webp|tiff?|bmp|avif)$' || true)
-[ -z "$staged" ] && exit 0
+staged=()
+while IFS= read -r -d '' f; do
+  case "${f,,}" in
+    *.png|*.jpg|*.jpeg|*.gif|*.webp|*.tif|*.tiff|*.bmp|*.avif) staged+=("$f") ;;
+  esac
+done < <(git diff --cached --name-only -z --diff-filter=ACMR)
+[ "${#staged[@]}" -eq 0 ] && exit 0
 
 command -v exiftool >/dev/null || {
   echo "check-screenshots: exiftool not installed, cannot verify image metadata." >&2
@@ -26,11 +31,12 @@ command -v exiftool >/dev/null || {
 }
 
 fail=0
-while IFS= read -r f; do
-  [ -f "$f" ] || continue
+tmp=""
+trap 'if [ -n "$tmp" ]; then rm -f -- "$tmp"; fi' EXIT
+for f in "${staged[@]}"; do
 
   case "$f" in
-    *_raw/*|*.raw.*|*/screenshots-raw/*)
+    *_raw/*|*.raw.*|screenshots-raw/*|*/screenshots-raw/*)
       echo "BLOCKED $f" >&2
       echo "        raw capture - scrub it and add it with scripts/add-screenshot.sh" >&2
       fail=1
@@ -38,19 +44,20 @@ while IFS= read -r f; do
       ;;
   esac
 
-  size=$(stat -c %s "$f")
+  # Check the exact bytes being committed, even if the working copy has been
+  # resized, scrubbed, or deleted since it was staged.
+  tmp=$(mktemp --suffix=".${f##*.}")
+  git show ":$f" > "$tmp"
+  size=$(stat -c %s "$tmp")
   if [ "$size" -gt "$max_bytes" ]; then
     echo "BLOCKED $f" >&2
     echo "        $((size / 1024)) KB exceeds the ${max_bytes}-byte cap - crop or downscale it" >&2
     fail=1
   fi
 
-  # Read the staged content, not the working tree, so a scrub that was never
-  # staged cannot pass the check.
-  tmp=$(mktemp --suffix=".${f##*.}")
-  git show ":$f" > "$tmp"
   found=$(exiftool -S "$tmp" 2>/dev/null | grep -E "^($blocked_tags):" || true)
-  rm -f "$tmp"
+  rm -f -- "$tmp"
+  tmp=""
 
   if [ -n "$found" ]; then
     echo "BLOCKED $f" >&2
@@ -58,7 +65,7 @@ while IFS= read -r f; do
     echo "        run: scripts/scrub-image.sh $f && git add $f" >&2
     fail=1
   fi
-done <<< "$staged"
+done
 
 [ "$fail" -eq 0 ] || {
   echo >&2
