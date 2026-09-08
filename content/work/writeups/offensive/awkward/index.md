@@ -247,11 +247,11 @@ product-details/<item>.txt, line 2
 
 Both of those store directories are world writable, and that asymmetry is what the chain runs on: bean can drop files into `cart/` and `product-details/`, but not into `/var/www/private/`, where the CSV lives. An `ls -l` on the three is one of the captures I'm missing, so treat the exact modes as sourced rather than observed.
 
-So we could put a symlink in the cart directory and control the second line of the product file. The store would do the append with its own permissions. The injected option would enter through the file contents, rather than through the request parameters.
+So we could put a symlink in the cart directory and create a product file whose second line we control. The store would do the append with its own permissions. The injected option would enter through the file contents, rather than through the request parameters.
 
 ### Put the pieces together
 
-The recorded sequence used product `4` and cart name `fakecart`. These commands are formatted from that sequence; I haven't rerun them against a fresh instance. First, from the bean shell, put the payload on the second line of the product file:
+The recorded sequence used product `4` and cart name `fakecart`. These commands are formatted from that sequence; I haven't rerun them against a fresh instance. First, from the bean shell, create the product file with the payload on its second line. The cart action builds the path straight from the item id, so this is a file we add rather than a shipped product we overwrite:
 
 ```bash
 cat > /var/www/store/product-details/4.txt <<'EOF'

