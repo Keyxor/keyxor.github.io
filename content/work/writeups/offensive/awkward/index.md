@@ -1,7 +1,7 @@
 ---
 title: "Awkward — SSRF, JWT Forgery, and a Store Cart to Root"
 date: 2026-09-08
-draft: true
+draft: false
 tier: offensive-deep
 summary: "An exposed staff API gets us into HR, SSRF reveals an awk injection, and a home backup gives us SSH. Root takes a symlink through the store cart and an injected mail option."
 categories:
