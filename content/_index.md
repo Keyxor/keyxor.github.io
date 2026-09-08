@@ -15,5 +15,3 @@ I spend my own time on the attacker side; you can't hunt what you don't understa
 I have been in IT for ten years, with four in security. I'm a veteran of the United States Marine Corps, where I administered and built out Windows and Linux servers with a heavy Active Directory focus. That's where I learned how authentication actually works and what those systems write to their logs, which turned out to matter on both sides of the fence.
 
 I've completed the full CPTS and CWES skill paths on Hack The Box, and hold CompTIA Security+ and SecurityX (formerly CASP).
-
-[GitHub](https://github.com/Keyxor) · [LinkedIn](https://www.linkedin.com/in/noah-cuberly) · [Hack The Box](https://profile.hackthebox.com/profile/019e4237-2502-73b4-a8bf-15bea8e6ac14)

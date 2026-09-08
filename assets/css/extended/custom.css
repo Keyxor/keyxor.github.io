@@ -147,3 +147,34 @@
     font-size: 13px;
     color: var(--secondary);
 }
+
+/* ---------------------------------------------------------------------------
+   Home page social icons (layouts/index.html)
+
+   PaperMod styles .social-icons for the profile and home-info layouts, which
+   this site does not use, so the row needs its own alignment: the theme pads
+   every icon 10px, which indents the first one out of line with the bio text
+   above it.
+   --------------------------------------------------------------------------- */
+.home-social {
+    margin-top: var(--gap);
+}
+
+.home-social .social-icons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.home-social .social-icons a {
+    color: var(--secondary);
+    transition: color 0.2s ease;
+}
+
+.home-social .social-icons a:first-of-type {
+    padding-inline-start: 0;
+}
+
+.home-social .social-icons a:hover {
+    color: var(--accent);
+}

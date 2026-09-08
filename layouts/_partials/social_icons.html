@@ -1,0 +1,20 @@
+{{- /*
+  Overrides themes/PaperMod/layouts/_partials/social_icons.html for two reasons.
+
+  PaperMod pipes the label through `title`, which AP-cases an explicit
+  params.socialIcons title: "Hack The Box" comes out "Hack the Box". Here the
+  title is used verbatim when set, and the theme's behaviour (name, title-cased)
+  is kept as the fallback.
+
+  Its links also carry only a title attribute, which is an unreliable accessible
+  name for an icon with no text, so aria-label is set alongside it.
+*/ -}}
+<div class="social-icons" {{ with .align }}align="{{ . }}" {{- end }}>
+    {{- range site.Params.socialIcons }}
+    {{- $label := .title | default (.name | title) }}
+    <a href="{{ trim .url " " | safeURL }}" target="_blank" rel="noopener noreferrer me"
+        title="{{ $label }}" aria-label="{{ $label }}">
+        {{ partial "svg.html" . }}
+    </a>
+    {{- end }}
+</div>

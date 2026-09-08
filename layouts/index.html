@@ -19,4 +19,16 @@
 </div>
 {{- end }}
 
+{{- /*
+  The icon row for params.socialIcons. PaperMod only renders this through
+  home_info.html or index_profile.html, neither of which this template uses, so
+  the partial is called directly. It reads site.Params.socialIcons itself and
+  takes no page context beyond the optional align key.
+*/ -}}
+{{- if site.Params.socialIcons }}
+<div class="home-social">
+  {{- partial "social_icons.html" (dict) }}
+</div>
+{{- end }}
+
 {{- end }}{{/* main */}}
