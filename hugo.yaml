@@ -84,6 +84,9 @@ params:
     - name: linkedin
       url: "https://www.linkedin.com/in/noah-cuberly"
 
+    - name: hackthebox
+      url: "https://profile.hackthebox.com/profile/019e4237-2502-73b4-a8bf-15bea8e6ac14"
+
 menu:
   main:
     - identifier: work
