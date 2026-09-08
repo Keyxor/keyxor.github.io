@@ -126,7 +126,9 @@ Substituting it into the captured command gives:
 awk '//' /etc/passwd '/dud/' /var/www/private/leave_requests.csv
 ```
 
-The empty regular expression matches every record. `/etc/passwd` has become an input file; the quoted `/dud/` is another file argument, not a second awk program. A later file error doesn't undo output already produced for `/etc/passwd`. The empty-regexp behavior is documented in the [GNU awk manual](https://www.gnu.org/s/gawk/manual/gawk.html#Regexp-Operator-Details).
+The empty regular expression matches every record. `/etc/passwd` has become an input file; the quoted `/dud/` is another file argument, not a second awk program.
+
+That leaves the CSV sitting there as a third operand, and it never gets read. awk works through its file arguments in order: it prints all of `/etc/passwd`, then fails to open `/dud/` and exits with status 2 before reaching the leave requests. The failure goes to stderr while `exec()` hands back stdout, so the response carries the file I asked for and none of the CSV rows. I worked that ordering out afterwards rather than during the box. The empty-regexp behavior is documented in the [GNU awk manual](https://www.gnu.org/s/gawk/manual/gawk.html#Regexp-Operator-Details).
 
 ### Reading bean's files
 
@@ -243,7 +245,9 @@ product-details/<item>.txt, line 2
     -> follow a symlink to /var/www/private/leave_requests.csv
 ```
 
-We could put a symlink in the cart directory and control the second line of the product file. The store would do the append with its own permissions. The injected option would enter through the file contents, rather than through the request parameters.
+Both of those store directories are world writable, and that asymmetry is what the chain runs on: bean can drop files into `cart/` and `product-details/`, but not into `/var/www/private/`, where the CSV lives. An `ls -l` on the three is one of the captures I'm missing, so treat the exact modes as sourced rather than observed.
+
+So we could put a symlink in the cart directory and control the second line of the product file. The store would do the append with its own permissions. The injected option would enter through the file contents, rather than through the request parameters.
 
 ### Put the pieces together
 
