@@ -1,7 +1,7 @@
 ---
 title: "Forge — Two Ways Past an SSRF Denylist, and a Debugger Left Open"
 date: 2026-09-08
-draft: true
+draft: false
 tier: offensive-deep
 summary: "An upload form blocks the hostnames that matter, and both case manipulation and a redirect server get around it. An announcements page hands over FTP credentials, FTP hands over an SSH key, and a sudo script drops to a pdb prompt when you feed it the wrong type."
 categories:

@@ -1,7 +1,7 @@
 ---
 title: "Editorial — SSRF to an Internal API, a Git History, and a Vulnerable Library"
 date: 2026-09-08
-draft: true
+draft: false
 tier: offensive-deep
 summary: "An upload form that fetches URLs gives us a port scan of localhost, a forgotten API on 5000 hands over credentials, a commit diff gives up the production password, and a library the sudo script imports finishes it."
 categories:
