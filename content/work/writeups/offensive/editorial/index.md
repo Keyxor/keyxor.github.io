@@ -22,11 +22,11 @@ TocOpen: false
 
 **Box:** Editorial (Hack The Box) · **OS:** Linux
 
-The chain here is simple, and it was fun to learn. A publishing site has an upload form that will fetch a cover image from a URL you give it, which is server-side request forgery with a friendly interface. Pointing it at localhost and walking the ports turns up a service on 5000 that answers with API documentation, and one of those endpoints hands over a set of credentials.
+The chain here is simple, and it was fun to learn. A publishing site has an upload form that will fetch a cover image from a URL you give it, which is server-side request forgery with a friendly interface. Pointing it at localhost and probing the ports over HTTP turns up a service on 5000 that answers with API documentation, and one of those endpoints hands over a set of credentials.
 
 That gets us onto the box. From there a git repository in the user's home has a commit that downgraded the environment from production to development, and the production password is sitting in the diff. That user can run a Python script with `sudo`, and although we cannot modify it, we can supply a URL that exploits its GitPython call.
 
-Not too hard, not too easy. I came out of it having learned some git commands, a library injection, and a better feel for what SSRF is actually good for.
+Not too hard, not too easy. I came out of it having learned some git commands, an argument injection through a clone URL, and a better feel for what SSRF is actually good for.
 
 ## Recon
 
@@ -40,7 +40,7 @@ Exploring the page functionality, there is an upload field. We do not know what 
 
 For a browser replay, use the **Preview** button on `/upload` to trigger the cover fetch. This detail is corroborated by [Bloodstiller's walkthrough](https://bloodstiller.com/walkthroughs/editorial-box/#enumerating-the-publish-with-us-page-for-injection-points).
 
-In Burp, the URL lands at `/upload-cover`. Sending `http://127.0.0.1` there comes back `200 OK`, but that does not tell us whether the fetch succeeded or the address was filtered.
+In Burp, the URL lands at `/upload-cover`, carried in the `bookurl` field of the multipart body. That is the field to mark up later. Sending `http://127.0.0.1` there comes back `200 OK`, but that does not tell us whether the fetch succeeded or the address was filtered.
 
 Let's make it talk to us instead:
 
@@ -60,7 +60,7 @@ This tests HTTP responses across ports. An open service speaking another protoco
 seq 1 65535 > ports.txt
 ```
 
-Send the upload request to Intruder, put the payload marker on the port, and load that list.
+Send the upload request to Intruder, put the payload marker on the port in `bookurl`, and load that list.
 
 The probes keep coming back `200` with the default image result, so the status code is not separating them. Grep the responses for that default instead, and look for one that does not match.
 
@@ -70,27 +70,32 @@ Port 5000 is the one that comes back different:
 static/uploads/671fb455-fbb8-4d16-aa89-332b5ee00c9c
 ```
 
-The upload paths below are from my session. Use the fresh path returned by your own request when following along.
+The upload paths below are from my session, and each submission generates a fresh one. Use the path your own request returns when following along.
 
 ### Getting at what 5000 actually returned
 
 This is where it needs a bit of creativity. What the form does with a URL is fetch it and use the result as the cover image, so the response body is sitting in that uploaded file rather than anywhere we can read directly. The usual result is the placeholder JPEG. For 5000 it is something else, and opening it in a new tab prompts a download rather than rendering.
 
-The file is JSON:
+That file is served back off the site at the path the response handed us, so pull it with `curl` rather than hunting for wherever the browser dropped it. It is JSON:
 
 ```bash
-cat 671fb455-fbb8-4d16-aa89-332b5ee00c9c | jq
+curl http://editorial.htb/static/uploads/671fb455-fbb8-4d16-aa89-332b5ee00c9c -o internal-api.json
+jq . internal-api.json
 ```
 
 Inside is a list of API endpoints on the internal service. The entries included authors, changelog, and how-to-use-platform.
 
-So we go back to the same SSRF and request each of those in turn, then read the resulting upload straight off the site instead of downloading it by hand:
+So we go back to the same SSRF and request each of those in turn. Each one is two actions: put the endpoint URL in `bookurl` and submit it, then read the new path that submission returns.
+
+```text
+http://127.0.0.1:5000/api/latest/metadata/messages/authors
+```
 
 ```bash
 curl http://editorial.htb/static/uploads/ca85d32f-ac3f-41fe-a1b5-574bc2e46925 | jq
 ```
 
-That one is the response from `http://127.0.0.1:5000/api/latest/metadata/messages/authors`, and it carries credentials:
+That is the stored response from the authors endpoint, and it carries credentials:
 
 ```text
 Username: dev

