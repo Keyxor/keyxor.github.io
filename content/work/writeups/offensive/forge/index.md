@@ -85,10 +85,10 @@ class Redirect(BaseHTTPRequestHandler):
 HTTPServer(('0.0.0.0', 80), Redirect).serve_forever()
 ```
 
-Save this as `redirect.py`. This version corrects the `end_response()` typo in the notes to `end_headers()`. It listens on port 80; the URL supplied to the upload form is our server's address, while the command argument is the redirect destination.
+Save this as `redirect.py`. This version corrects the `end_response()` typo in the notes to `end_headers()`. It listens on port 80, which needs root, so run it under `sudo`. The URL supplied to the upload form is our server's address, while the command argument is the redirect destination.
 
 ```bash
-python3 redirect.py http://admin.forge.htb
+sudo python3 redirect.py http://admin.forge.htb
 ```
 
 Case manipulation was easier to repeat here: edit the target URL in the upload request, then retrieve the resulting file. That let us keep exploring the admin site.
